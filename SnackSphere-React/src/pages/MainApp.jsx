@@ -10,6 +10,7 @@ import ProfilePage from './ProfilePage'
 import CartModal from '../components/CartModal'
 import PaymentModal from '../components/PaymentModal'
 import OrderConfirmationModal from '../components/OrderConfirmationModal'
+import FloatingCartBar from '../components/FloatingCartBar'
 
 export default function MainApp() {
   const [savedOutlet, setSavedOutlet] = useState('')
@@ -187,6 +188,7 @@ export default function MainApp() {
           onClose={handleConfirmClose}
         />
       )}
+      <FloatingCartBar onCartOpen={() => setCartOpen(true)} />
     </div>
   )
 }

@@ -15,6 +15,7 @@ const orderSchema = new mongoose.Schema({
     total: Number,
     paymentMethod: String,
     outletName: String,
+    note: { type: String, default: '' },  // 👈 bas yeh add kiya
     status: {
         type: String,
         enum: ['Pending', 'Confirmed', 'Preparing', 'Ready', 'Delivered', 'Rejected'],

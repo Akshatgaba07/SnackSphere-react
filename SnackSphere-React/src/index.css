@@ -2274,3 +2274,60 @@ body>* {
     margin-left: auto;
     margin-right: auto;
 }
+
+/* Cart Overlay */
+.cart-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+/* Cart Sidebar */
+.cart-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    /* ← Stick to right */
+    width: 380px;
+    /* ← Fixed width */
+    max-width: 100vw;
+    height: 100vh;
+    /* ← Full height */
+    background: #fff;
+    z-index: 1001;
+    overflow-y: auto;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    padding: 24px;
+
+    /* Slide-in animation */
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.cart-modal.open {
+    transform: translateX(0);
+    /* ← Slides in */
+}
+
+@media (max-width: 480px) {
+    .cart-modal {
+        width: 100vw;
+        /* Full screen on small devices */
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}

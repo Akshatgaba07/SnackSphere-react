@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
     cors: {
         origin: "*",
@@ -19,7 +20,7 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// ✅ Serve frontend from separate folder (no need to copy files)
+// Static frontend
 app.use(express.static(path.join(__dirname, '../SnackSphere-frontend')));
 
 // Make io accessible in routes
@@ -46,6 +47,8 @@ io.on('connection', (socket) => {
 
 // Routes
 app.use('/api/orders', require('./routes/orders'));
+app.use('/api/outlets', require('./routes/outlets'));
+app.use('/api/payment', require('./routes/payment')); // 👈 Razorpay
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -55,7 +58,7 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// ✅ Serve index.html for all non-API routes
+// Serve frontend for all non-API routes
 app.get('/{*path}', (req, res) => {
     res.sendFile(path.join(__dirname, '../SnackSphere-frontend/index.html'));
 });

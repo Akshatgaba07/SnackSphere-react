@@ -9,6 +9,7 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [isOpen, setIsOpen] = useState(true) // 👈 new
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
@@ -22,6 +23,14 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false)
     }
+  }, [adminOutlet])
+
+  // 👇 fetch outlet open/closed status
+  useEffect(() => {
+    fetch(`/api/outlets/status/${encodeURIComponent(adminOutlet)}`)
+      .then(r => r.json())
+      .then(d => setIsOpen(d.isOpen))
+      .catch(() => setIsOpen(true))
   }, [adminOutlet])
 
   useEffect(() => {
@@ -43,6 +52,19 @@ export default function AdminDashboard() {
       const data = await res.json()
       if (data.success) fetchOrders()
       else alert('❌ Failed to update: ' + data.error)
+    } catch (err) {
+      alert('❌ Could not reach server.')
+    }
+  }
+
+  // 👇 toggle outlet open/closed
+  async function toggleOutlet() {
+    try {
+      const res = await fetch(`/api/outlets/toggle/${encodeURIComponent(adminOutlet)}`, {
+        method: 'POST'
+      })
+      const data = await res.json()
+      setIsOpen(data.isOpen)
     } catch (err) {
       alert('❌ Could not reach server.')
     }
@@ -72,13 +94,38 @@ export default function AdminDashboard() {
         background: 'linear-gradient(135deg, #d90000 0%, #ff6b6b 100%)',
         color: 'white', padding: '20px', borderRadius: '16px', marginBottom: '20px'
       }}>
-        <h2 style={{ margin: 0 }}>🪟 {adminOutlet}</h2>
-        <p style={{ margin: '4px 0 0 0', opacity: 0.9 }}>Admin Dashboard</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h2 style={{ margin: 0 }}>🪟 {adminOutlet}</h2>
+            <p style={{ margin: '4px 0 0 0', opacity: 0.9 }}>Admin Dashboard</p>
+          </div>
+          {/* 👇 Open/Closed status badge */}
+          <div style={{
+            background: isOpen ? 'rgba(76,175,80,0.3)' : 'rgba(0,0,0,0.3)',
+            border: `2px solid ${isOpen ? '#4caf50' : 'rgba(255,255,255,0.3)'}`,
+            borderRadius: '20px', padding: '4px 12px',
+            fontSize: '13px', fontWeight: 700
+          }}>
+            {isOpen ? '🟢 Open' : '🔴 Closed'}
+          </div>
+        </div>
+
         <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
           <button onClick={fetchOrders} style={{
             background: 'rgba(255,255,255,0.25)', border: 'none', color: 'white',
             padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600
-          }}>🔄 Refresh Orders</button>
+          }}>🔄 Refresh</button>
+
+          {/* 👇 Toggle button */}
+          <button onClick={toggleOutlet} style={{
+            background: isOpen ? 'rgba(244,67,54,0.4)' : 'rgba(76,175,80,0.4)',
+            border: '2px solid rgba(255,255,255,0.4)',
+            color: 'white', padding: '8px 16px',
+            borderRadius: '8px', cursor: 'pointer', fontWeight: 700
+          }}>
+            {isOpen ? '🔴 Close Outlet' : '🟢 Open Outlet'}
+          </button>
+
           <button onClick={handleLogout} style={{
             background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white',
             padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600
@@ -140,6 +187,18 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
+
+            {order.note && (
+              <div style={{
+                background: '#fff9f0', border: '1.5px dashed #ffb347',
+                borderRadius: '8px', padding: '8px 12px', marginTop: '10px',
+                fontSize: '13px', color: '#b35a00',
+                display: 'flex', gap: '6px', alignItems: 'flex-start'
+              }}>
+                <span>📝</span>
+                <span><strong>Note:</strong> {order.note}</span>
+              </div>
+            )}
 
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',

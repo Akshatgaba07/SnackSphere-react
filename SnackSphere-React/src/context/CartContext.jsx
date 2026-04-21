@@ -10,6 +10,7 @@ export function CartProvider({ children }) {
   const [currentOutlet, setCurrentOutlet] = useState(
     () => localStorage.getItem('currentOutlet') || ''
   )
+  const [orderNote, setOrderNote] = useState('') // 👈 new
 
   useEffect(() => {
     localStorage.setItem('snackSphereCart', JSON.stringify(cart))
@@ -35,22 +36,20 @@ export function CartProvider({ children }) {
         if (item.name !== name) return [...acc, item]
         if (action === 'increase') return [...acc, { ...item, quantity: item.quantity + 1 }]
         if (action === 'decrease' && item.quantity > 1) return [...acc, { ...item, quantity: item.quantity - 1 }]
-        return acc // quantity 1 + decrease = remove
+        return acc
       }, [])
     })
   }
 
   function clearCart() {
     setCart([])
+    setOrderNote('') // 👈 reset note on clear
     localStorage.removeItem('snackSphereCart')
   }
 
   function openOutlet(outletName) {
-    console.log('openOutlet called:', outletName)
     setCurrentOutlet(outletName)
     localStorage.setItem('currentOutlet', outletName)
-    // Force verify it saved
-    console.log('Saved to localStorage:', localStorage.getItem('currentOutlet'))
   }
 
   function closeOutlet() {
@@ -65,7 +64,8 @@ export function CartProvider({ children }) {
     <CartContext.Provider value={{
       cart, addToCart, removeFromCart, updateQuantity, clearCart,
       currentOutlet, openOutlet, closeOutlet,
-      totalItems, totalAmount
+      totalItems, totalAmount,
+      orderNote, setOrderNote  // 👈 new
     }}>
       {children}
     </CartContext.Provider>
