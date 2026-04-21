@@ -5,7 +5,7 @@ let socketInstance = null
 
 export function getSocket() {
   if (!socketInstance) {
-    socketInstance = io('http://localhost:5000')
+    socketInstance = io('https://snacksphere-backend.onrender.com')
   }
   return socketInstance
 }
